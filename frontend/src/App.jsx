@@ -4,6 +4,7 @@ import HomeView from './components/HomeView';
 import DashboardView from './components/DashboardView';
 import CodeExplorerView from './components/CodeExplorerView';
 import ChatView from './components/ChatView';
+import { apiFetch } from './api';
 
 function App() {
   const [repositoryId, setRepositoryId] = useState('');
@@ -23,33 +24,18 @@ function App() {
     
     try {
       // 1. Trigger backend analysis
-      const res = await fetch('/api/analyze-repository', {
+      const data = await apiFetch('/api/analyze-repository', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ repo_url: url })
       });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || 'Analysis failed. Make sure the repository is public and contains code.');
-      }
-
-      const data = await res.json();
       const repoId = data.repository_id;
 
       // 2. Fetch full repository details (tree structure, stack details)
-      const detailsRes = await fetch(`/api/repository/${repoId}`);
-      if (!detailsRes.ok) {
-        throw new Error('Failed to load analysis details.');
-      }
-      const details = await detailsRes.json();
+      const details = await apiFetch(`/api/repository/${repoId}`);
 
       // 3. Fetch pre-generated README
-      const readmeRes = await fetch(`/api/readme/${repoId}`);
-      if (!readmeRes.ok) {
-        throw new Error('Failed to fetch pre-generated README.');
-      }
-      const readmeText = await readmeRes.text();
+      const readmeText = await apiFetch(`/api/readme/${repoId}`);
 
       // 4. Commit states
       setRepositoryId(repoId);

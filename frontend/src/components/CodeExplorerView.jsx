@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Terminal, FileCode, Copy, Check, Loader2 } from 'lucide-react';
 import FileTree from './FileTree';
 import CodeViewer from './CodeViewer';
+import { apiFetch } from '../api';
 
 const CodeExplorerView = ({ repositoryId, fileTree }) => {
   const [selectedPath, setSelectedPath] = useState('');
@@ -17,15 +18,11 @@ const CodeExplorerView = ({ repositoryId, fileTree }) => {
       setIsLoading(true);
       setError('');
       try {
-        const response = await fetch(`/api/file/${repositoryId}?path=${encodeURIComponent(selectedPath)}`);
-        if (!response.ok) {
-          throw new Error(`Failed to load file: ${response.statusText}`);
-        }
-        const text = await response.text();
+        const text = await apiFetch(`/api/file/${repositoryId}?path=${encodeURIComponent(selectedPath)}`);
         setFileContent(text);
       } catch (err) {
         console.error(err);
-        setError('Failed to load file contents.');
+        setError(err.message || 'Failed to load file contents.');
         setFileContent('');
       } finally {
         setIsLoading(false);

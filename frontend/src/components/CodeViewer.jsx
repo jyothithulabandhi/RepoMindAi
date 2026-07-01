@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Sparkles, X, Loader2 } from 'lucide-react';
+import { apiFetch } from '../api';
 
 const CodeViewer = ({ filename, content }) => {
   const [selectedText, setSelectedText] = useState('');
@@ -91,7 +92,7 @@ const CodeViewer = ({ filename, content }) => {
     setShowButton(false);
 
     try {
-      const response = await fetch('/api/explain', {
+      const data = await apiFetch('/api/explain', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,11 +103,6 @@ const CodeViewer = ({ filename, content }) => {
         })
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get explanation from AI.');
-      }
-
-      const data = await response.json();
       setExplanation(data.explanation);
     } catch (err) {
       console.error(err);

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, MessageSquare, AlertCircle, FileCode, Sparkles, Cpu } from 'lucide-react';
 import MarkdownRenderer from './MarkdownRenderer';
+import { apiFetch } from '../api';
 
 const ChatView = ({ repositoryId, repoName }) => {
   const [messages, setMessages] = useState([]);
@@ -38,7 +39,7 @@ const ChatView = ({ repositoryId, repoName }) => {
     setError('');
 
     try {
-      const response = await fetch('/api/chat', {
+      const data = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -46,13 +47,6 @@ const ChatView = ({ repositoryId, repoName }) => {
           question: query
         })
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'RAG response failed');
-      }
-
-      const data = await response.json();
       
       // Add assistant response
       setMessages((prev) => [
