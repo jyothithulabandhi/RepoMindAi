@@ -8,7 +8,7 @@ RepoMind AI is a production-quality AI-powered codebase assistant. By entering a
 
 - **GitHub Repository Cloning & Filtering**: Validates URLs, shallow-clones (`depth=1`), and parses code while ignoring binaries, media, configuration files over 500KB, `node_modules`, `.git`, etc.
 - **Dual Vector Database Configuration**: Indexes code chunks using **ChromaDB**. In environments where ChromaDB C++ bindings cannot compile (such as some Windows setups without Build Tools), the system **automatically falls back** to a custom, lightweight NumPy-based JSON vector database.
-- **Dual LLM Provider Support**: Connects to the **Gemini API** (using `gemini-1.5-flash` for high-speed analysis and large contexts) or falls back to **OpenAI API** (`gpt-4o-mini`).
+- **Low-Latency LLM via Groq**: Uses the **Groq API** with **Llama-3.3-70B** for fast, low-latency answer generation and codebase analysis.
 - **Interactive Code Explorer**: Collapsible file tree that dynamically fetches and displays file contents side-by-side with line numbers.
 - **README.md Pre-generator**: Automatically generates a complete, professional markdown README based on the code analysis, allowing users to copy it to their clipboard or download it.
 - **ChatGPT-Style QA Chat**: Retrieve semantic contexts, ask architectural or code-level questions, and view cited file tags.
@@ -20,7 +20,7 @@ RepoMind AI is a production-quality AI-powered codebase assistant. By entering a
 
 - **Frontend**: React (18+), Vite, Tailwind CSS, Lucide Icons.
 - **Backend**: FastAPI, Python (3.11+), Uvicorn.
-- **AI/RAG**: LangChain, LangChain Community, LangChain Google GenAI / OpenAI.
+- **AI/RAG**: LangChain, LangChain Community, LangChain Groq (Llama-3.3-70B via Groq API).
 - **Database**: ChromaDB (Primary) / NumPy & JSON File Store (Fallback).
 - **Git Processing**: GitPython.
 - **Deployment**: Docker, Docker Compose, Nginx.
@@ -66,7 +66,7 @@ Before starting, ensure you have:
 - [Python 3.11+](https://www.python.org/downloads/)
 - [Node.js v18+](https://nodejs.org/)
 - [Git](https://git-scm.com/) installed and added to your system path.
-- An API Key from **Google AI Studio** (Gemini API) *or* **OpenAI** (OpenAI API).
+- An API Key from the **[Groq Console](https://console.groq.com/)** (Groq API).
 
 ---
 
@@ -81,13 +81,10 @@ cd backend
 copy .env.example .env
 ```
 
-Open the newly created `.env` file and insert your API Key(s):
+Open the newly created `.env` file and insert your Groq API key:
 
 ```env
-# Populate at least one:
-GEMINI_API_KEY=AIzaSy...
-# Or:
-OPENAI_API_KEY=sk-...
+GROQ_API_KEY=gsk_...
 ```
 
 ### 2. Set Up & Run Backend
@@ -130,7 +127,7 @@ The React application will launch on `http://localhost:3000`. It contains proxy 
 
 Running via Docker spins up both backend and frontend automatically inside a virtualized bridge network.
 
-1. Ensure you have populated `backend/.env` with your API keys.
+1. Ensure you have populated `backend/.env` with your Groq API key.
 2. From the project root directory, run:
 
 ```bash
